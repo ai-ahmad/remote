@@ -24,6 +24,16 @@
     "Password": "Parol",
     "Register successful.": "Ro'yxatdan o'tish muvaffaqiyatli.",
     "Registration failed. Please try again.": "Ro'yxatdan o'tish muvaffaqiyatsiz. Iltimos, yana bir bor urinib ko'ring.",
-    "Back to Home": "Bosh sahifaga qaytish"
+    "Back to Home": "Bosh sahifaga qaytish",
+    "Upload Image or Video": "Rasm yoki video yuklang",
+  "Text": "Matn",
+  "Upload": "Yuklash",
+  "Select Report Type": "Hisobot turini tanlang",
+  "No illegal tree felling": "Noqonuniy daraxt kesish",
+  "No illegal waste dumping": "Noqonuniy musur tashlash",
+  "No illegal construction": "Noqonuniy qurilish",
+  "Environmental pollution": "Atrof-muhitni ifloslantirish",
+  "Illegal hunting of wild nature": "Yovvoyi tabiatni noqonuniy ovlash",
+  "shikoyar": "Shikoyat"
   }
   

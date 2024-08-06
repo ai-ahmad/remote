@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DeviceCard from '../components/common/SwitchCard'; // Ensure the import path is correct
-import { Link } from 'react-router-dom';
 import Header from "../components/layout/Header";
+import UploadComponent from '../components/common/Uploads';
 
 const HomePage = () => {
+  const { t } = useTranslation(); // Add this line to use translation
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [devices, setDevices] = useState([
     { id: 1, title: 'Temperature', value: '20', imgSrc: 'https://static.vecteezy.com/system/resources/previews/024/499/899/non_2x/electro-logo-concept-premium-design-vector.jpg', consumption: '30' },
     { id: 2, title: 'Philips lamp', value: '97', imgSrc: 'https://static.vecteezy.com/system/resources/previews/024/499/899/non_2x/electro-logo-concept-premium-design-vector.jpg', consumption: '15' },
@@ -51,34 +52,35 @@ const HomePage = () => {
   };
 
   return (
-    <div className=" text-white min-h-screen p-4 mt-10">
+    <div className="text-white min-h-screen p-4 mt-10">
       <Header />
+      <h2 className='text-4xl text-white font-bold text-center mt-4'>{t('shikoyar')}</h2>
+      <UploadComponent />
       <div className="text-center my-8">
-        <h2 className="text-3xl font-semibold">My Devices</h2>
+        <h2 className="text-3xl font-semibold">{t('My Devices')}</h2>
       </div>
-    <div className="container3 flex justify-center items-center w-full">
-    <div className="flex flex-wrap  gap-5 items-center ">
-        {devices.map((device) => (
-          <DeviceCard
-            
-            key={device.id}
-            title={device.title}
-            value={device.value}
-            imgSrc={device.imgSrc}
-            consumption={device.consumption}
-            onDelete={() => handleDelete(device.id)}
-          />
-        ))}
-        <div 
-          onClick={openModal}
-          className="bg-gray-800 p-4 w-[250px] h-[300px] rounded-md text-center flex flex-col items-center justify-center cursor-pointer"
-        >
-          <span className="text-4xl text-white">+</span>
-          <p className="text-lg font-semibold text-white mt-2">Add another</p>
+      <div className="container3 flex justify-center items-center w-full">
+        <div className="flex flex-wrap z-[-10] gap-5 items-center">
+          {devices.map((device) => (
+            <DeviceCard
+              key={device.id}
+              title={device.title}
+              value={device.value}
+              imgSrc={device.imgSrc}
+              consumption={device.consumption}
+              onDelete={() => handleDelete(device.id)}
+            />
+          ))}
+          <div
+            onClick={openModal}
+            className="bg-gray-800 p-4 w-[250px] h-[300px] rounded-md text-center flex flex-col items-center justify-center cursor-pointer"
+          >
+            <span className="text-4xl text-white">+</span>
+            <p className="text-lg font-semibold text-white mt-2">{t('Add another')}</p>
+          </div>
         </div>
       </div>
-    </div>
-      
+
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
@@ -87,12 +89,12 @@ const HomePage = () => {
               onClick={closeModal}
               className="bg-gray-700 text-white px-4 py-2 rounded-md absolute top-2 right-2"
             >
-              Close
+              {t('Close')}
             </button>
-            <h2 className="text-2xl mb-4 text-center">Add New Device</h2>
+            <h2 className="text-2xl mb-4 text-center">{t('Add New Device')}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Device Name</label>
+                <label className="block text-sm font-medium text-gray-700">{t('Device Name')}</label>
                 <input
                   type="text"
                   name="title"
@@ -102,7 +104,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Device Type</label>
+                <label className="block text-sm font-medium text-gray-700">{t('Device Type')}</label>
                 <input
                   type="text"
                   name="type"
@@ -112,7 +114,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Consumption (V/hr)</label>
+                <label className="block text-sm font-medium text-gray-700">{t('Consumption (V/hr)')}</label>
                 <input
                   type="number"
                   name="consumption"
@@ -122,7 +124,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                <label className="block text-sm font-medium text-gray-700">{t('Image URL')}</label>
                 <input
                   type="text"
                   name="imgSrc"
@@ -136,7 +138,7 @@ const HomePage = () => {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md"
                 >
-                  Add Device
+                  {t('Add Device')}
                 </button>
               </div>
             </form>
