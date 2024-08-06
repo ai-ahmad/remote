@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Roboto font */
+
+.container2 {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.company-logo {
+  @apply transition-shadow duration-300 ease-in-out;
+  animation: spin-y 3s linear infinite;
+}
+
+/* Define the infinite rotation animation */
+@keyframes spin-y {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+/* Apply scale on hover */
+.company-logo img {
+  transition: transform 0.3s ease-in-out;
+}
+
+.company-logo:hover img {
+  transform: scale(1.5);
+}
+
+.animated-button .text {
+  background: linear-gradient(90deg, #70c3c1, #ffffff, #70c3c1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 100%;
+  animation: linear-wipe 2s linear infinite;
+}
+
+
+.container3 {
+    width: 95%;
+    margin: 0 auto;
+}
