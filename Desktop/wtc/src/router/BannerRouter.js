@@ -98,3 +98,5 @@ router.post('/create', upload.array('images', 1), async (req, res) => {
 });
 
 module.exports = router;
+
+// banner models
