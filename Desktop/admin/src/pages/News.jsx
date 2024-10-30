@@ -201,7 +201,7 @@ const News = () => {
                       <td>{newsItem._id}</td>
                       <td>
                         {newsItem.images && newsItem.images.length > 0 ? (
-                          <img src={`http://localhost:5000${newsItem.images[0]}`} alt="Изображение новости" className="w-16 h-16 object-cover" />
+                          <img src={`https://admin-dash-oil-trade.onrender.com${newsItem.images[0]}`} alt="Изображение новости" className="w-16 h-16 object-cover" />
                         ) : (
                           <span>Без изображения</span>
                         )}

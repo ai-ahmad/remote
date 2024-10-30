@@ -183,7 +183,7 @@ const Advertising = () => {
                                 <tr key={ad._id} className='text-white'>
                                     <td>{ad._id}</td>
                                     <td>
-                                        <img src={`http://localhost:5000${ad.image_url}`} alt="Ad" style={{ width: '100px', height: 'auto' }} />
+                                        <img src={`https://admin-dash-oil-trade.onrender.com/5000${ad.image_url}`} alt="Ad" style={{ width: '100px', height: 'auto' }} />
                                     </td>
                                     <td>{truncateDescription(ad.description)}</td>
                                     <td>
