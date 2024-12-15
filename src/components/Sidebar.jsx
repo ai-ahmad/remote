@@ -31,18 +31,7 @@ const Sidebar = ({ theme }) => {
               <FaHome size={20} /> Главная страница 
             </Link>
           </li>
-          <li>
-            <Link
-              to="/app/products" 
-              className={`flex items-center gap-4 py-2 px-5 rounded-lg transition-all duration-300 ${
-                location.pathname === "/app/products"
-                  ? linkActiveStyle
-                  : linkHoverStyle
-              }`}
-            >
-              <FaBoxOpen size={20} /> Продукты 
-            </Link>
-          </li>
+          
           <li>
             <Link
               to="/app/applications" 
@@ -115,18 +104,7 @@ const Sidebar = ({ theme }) => {
               <FaCreditCard size={20} /> Оплата и заказ 
             </Link>
           </li>
-          <li>
-            <Link
-              to="/app/dostavka" 
-              className={`flex items-center gap-4 py-2 px-5 rounded-lg transition-all duration-300 ${
-                location.pathname === "/app/dostavka"
-                  ? linkActiveStyle
-                  : linkHoverStyle
-              }`}
-            >
-              <FaTruck size={20} /> Доставка
-            </Link>
-          </li>
+          
           <li>
             <Link
               to="/app/contacts" 
@@ -153,6 +131,32 @@ const Sidebar = ({ theme }) => {
     <FaTags size={20} /> Категория
   </Link>
 </li>
+
+<li>
+            <Link
+              to="/app/products" 
+              className={`flex items-center gap-4 py-2 px-5 rounded-lg transition-all duration-300 ${
+                location.pathname === "/app/products"
+                  ? linkActiveStyle
+                  : linkHoverStyle
+              }`}
+            >
+              <FaBoxOpen size={20} /> Продукты 
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              to="/app/dostavka" 
+              className={`flex items-center gap-4 py-2 px-5 rounded-lg transition-all duration-300 ${
+                location.pathname === "/app/dostavka"
+                  ? linkActiveStyle
+                  : linkHoverStyle
+              }`}
+            >
+              <FaTruck size={20} /> Доставка
+            </Link>
+          </li>
 
         </ul>
       </div>

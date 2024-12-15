@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaSpinner } from "react-icons/fa";
 import { useOutletContext } from 'react-router-dom';
+import LoadingComponent from '../components/LoadingComponent';
 
 const Magazin = () => {
   const { theme } = useOutletContext();
@@ -143,7 +144,7 @@ const Magazin = () => {
         </button>
       </div>
 
-      <dialog id="my_modal_magazin" className="modal">
+      <dialog id="my_modal_magazin" className="modal text-white">
         <div className="modal-box">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</button>
@@ -174,37 +175,39 @@ const Magazin = () => {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="4" className="text-center flex justify-center items-center">
-                    <FaSpinner className="animate-spin text-5xl text-gray-50" />
-                  </td>
-                </tr>
-              ) : (
-                Array.isArray(data) && data.length > 0 ? (
-                  data.map((magazinItem) => (
-                    <tr key={magazinItem._id} className='text-white'>
-                      <td>{magazinItem._id}</td>
-                      <td>{magazinItem.name}</td>
-                      <td>
-  <div className="text-sm leading-relaxed max-w-xs overflow-hidden whitespace-nowrap text-ellipsis">
-    {magazinItem.description}
-  </div>
-</td>
+  {loading ? (
+    <tr>
+      <td colSpan="4">
+        <div className="flex justify-center items-center h-32">
+          <LoadingComponent />
+        </div>
+      </td>
+    </tr>
+  ) : (
+    Array.isArray(data) && data.length > 0 ? (
+      data.map((magazinItem) => (
+        <tr key={magazinItem._id} className='text-white'>
+          <td>{magazinItem._id}</td>
+          <td>{magazinItem.name}</td>
+          <td>
+            <div className="text-sm leading-relaxed max-w-xs overflow-hidden whitespace-nowrap text-ellipsis">
+              {magazinItem.description}
+            </div>
+          </td>
+          <td>
+            <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(magazinItem)}>Редактировать</button>
+            <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(magazinItem._id)}>Удалить</button>
+          </td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan="4" className="text-center">Нет доступных данных</td>
+      </tr>
+    )
+  )}
+</tbody>
 
-                      <td>
-                        <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(magazinItem)}>Редактировать</button>
-                        <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(magazinItem._id)}>Удалить</button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">Нет доступных данных</td>
-                  </tr>
-                )
-              )}
-            </tbody>
           </table>
         </div>
       </div>

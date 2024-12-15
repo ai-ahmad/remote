@@ -21,11 +21,12 @@ const Navbar = ({ toggleTheme, theme }) => {
                     className="h-10 ml-4" 
                 />
             </div>
-            <div className='mr-5'>
+            <div className='mr-5 '>
                 <Create />
             </div>
-            <div className="flex items-center space-x-6">
-                <Logout />
+            <div className="flex items-center space-x-6 ">
+                <div className=''><Logout /></div>
+                
                 <div onClick={toggleTheme} className="cursor-pointer ml-4 hover:text-blue-300 transition duration-300">
                     {theme === 'light' ? <FaMoon size={24} /> : <FaSun size={24} />} 
                 </div>

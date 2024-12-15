@@ -13,6 +13,7 @@ import {
   Legend,
 } from "chart.js";
 import { useNavigate } from "react-router-dom";
+import LoadingComponent from "../components/LoadingComponent";
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -155,9 +156,7 @@ const Home = () => {
         <h1 className="text-3xl font-semibold">Dashboard</h1>
       </div>
       {loading ? (
-        <div className="flex justify-center items-center h-full">
-          <FaSpinner className="animate-spin text-3xl text-gray-500 w-[50px] h-[50px]" />
-        </div>
+        <LoadingComponent />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

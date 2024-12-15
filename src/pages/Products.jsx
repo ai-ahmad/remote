@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { FaTrash } from 'react-icons/fa';
-import { FaSpinner } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaTrash, FaEdit, FaSpinner } from 'react-icons/fa';
+import LoadingComponent from '../components/LoadingComponent';
 
 const Products = () => {
-  // Define initialFormData for resetting the form
   const initialFormData = {
     name: '',
     description: '',
@@ -17,87 +16,84 @@ const Products = () => {
     ruler: '',
     oils_type: '',
     fidbek: '',
-    images: [],
-    imagePreviews: [],
+    image: {
+      main_images: null,
+      all_images: [],
+    },
     pdf: null,
   };
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null); 
-  const [imageFields, setImageFields] = useState([0]); 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageFields, setImageFields] = useState([0]);
   const [mainImageIndex, setMainImageIndex] = useState(null);
-  const [categories, setCategories] = useState([]); // Store fetched categories
-
-
-  // Set initial form data
+  const [categories, setCategories] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editProductId, setEditProductId] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
 
   const handleFormChange = (e, index = null) => {
-    const { name, value, files, type } = e.target;
+    const { name, files, type } = e.target;
 
-    if (type === 'file') {
-      if (name === 'pdf') {
+    if (type === 'file' && name === 'images' && files && files[0]) {
+      const updatedImages = [...formData.image.all_images];
+      if (index !== null) {
+        updatedImages[index] = files[0];
         setFormData((prevFormData) => ({
           ...prevFormData,
-          pdf: files[0],
-        }));
-      } else if (name === 'images') {
-        if (formData.images.length >= 6) {
-          alert('Нельзя загрузить более 6 изображений.');
-          return;
-        }
-
-        const updatedImages = [...formData.images];
-        updatedImages[index] = files[0]; 
-
-        const updatedPreviews = [...formData.imagePreviews];
-        updatedPreviews[index] = URL.createObjectURL(files[0]); 
-
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          images: updatedImages,
-          imagePreviews: updatedPreviews,
+          image: {
+            ...prevFormData.image,
+            all_images: updatedImages,
+          },
         }));
       }
-    } else {
+    } else if (type === 'file' && name === 'pdf' && files && files[0]) {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        [name]: value,
+        pdf: files[0],
+      }));
+    } else if (name) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: e.target.value,
       }));
     }
   };
-  
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/category');
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
-      const categoriesData = await response.json();
-      setCategories(categoriesData); // Set fetched categories to state
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-  
 
   const addImageField = () => {
-    if (formData.images.length >= 6) {
+    if (formData.image.all_images.length >= 6) {
       alert('Нельзя загрузить более 6 изображений.');
     } else {
       setImageFields((prevFields) => [...prevFields, prevFields.length]);
     }
   };
 
+  const openImageUploadModal = () => {
+    const modal = document.getElementById('image_upload_modal');
+    if (modal) {
+      modal.showModal();
+    } else {
+      console.error('Modal element not found');
+    }
+  };
+
   const handleMainImageSelection = (index) => {
-    setMainImageIndex(index); 
+    setMainImageIndex(index);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      image: {
+        ...prevFormData.image,
+        main_images: formData.image.all_images[index],
+      },
+    }));
   };
 
   const closeModal = (modalId) => {
     document.getElementById(modalId).close();
     setSelectedImage(null);
+    setIsEditMode(false);
+    setEditProductId(null);
   };
 
   const openImageModal = (image) => {
@@ -105,93 +101,123 @@ const Products = () => {
     document.getElementById('image_modal').showModal();
   };
 
-  const openProductModal = () => {
+  const openProductModal = (product = null) => {
+    if (product) {
+      setFormData({
+        ...initialFormData,
+        ...product,
+        image: {
+          main_images: product.image.main_images || null,
+          all_images: product.image.all_images || [],
+        },
+      });
+      setIsEditMode(true);
+      setEditProductId(product._id);
+    } else {
+      setFormData(initialFormData);
+      setIsEditMode(false);
+      setEditProductId(null);
+    }
     document.getElementById('my_modal_3').showModal();
-  };
-
-  const openImageUploadModal = () => {
-    document.getElementById('image_upload_modal').showModal();
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    // Проверка: если цена со скидкой >= оригинальной цены
-    if (formData.discount_price && parseFloat(formData.discount_price) >= parseFloat(formData.price)) {
-      alert('Discount price must be less than the original price.');
-      return;
-    }
-
-    // Проверка: наличие хотя бы одного изображения
-    if (!formData.images || formData.images.length === 0) {
-      alert('Please upload at least one image.');
-      return;
-    }
-
     const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('category', formData.category);
-    formDataToSend.append('price', formData.price);
-    formDataToSend.append('description', formData.description);
-    formDataToSend.append('stock', formData.stock);
-    formDataToSend.append('rating', formData.rating);
-    formDataToSend.append('volume', formData.volume);
-    formDataToSend.append('discount_price', formData.discount_price);
-    formDataToSend.append('promotion', formData.promotion);
-    formDataToSend.append('ruler', formData.ruler);
-    formDataToSend.append('oils_type', formData.oils_type);
-    formDataToSend.append('fidbek', formData.fidbek);
-
-    const mainImage = formData.images[mainImageIndex]; 
-    const allImages = formData.images;
-
-    // Добавление основного изображения (если есть)
-    if (mainImage) {
-      formDataToSend.append('images', mainImage); 
-    }
-
-    // Добавление всех изображений
-    allImages.forEach((image) => {
-      formDataToSend.append('images', image); 
+    
+    // Append regular form data fields (text fields) to FormData
+    Object.keys(formData).forEach((key) => {
+      if (key !== 'image' && key !== 'pdf') {
+        formDataToSend.append(key, formData[key]);
+      }
     });
-
-    // Добавление PDF, если есть
+  
+    // Append all images if any are provided
+    if (formData.image.all_images.length === 0) {
+      alert("Please upload at least one image.");
+      return;
+    } else {
+      formData.image.all_images.forEach((image) => {
+        formDataToSend.append('all_images', image);
+      });
+    }
+  
+    // Append main image (selected image) if exists
+    if (mainImageIndex !== null && formData.image.all_images[mainImageIndex]) {
+      formDataToSend.append('main_images', formData.image.all_images[mainImageIndex]);
+    } else {
+      alert("Please select a main image.");
+      return;
+    }
+  
+    // Append PDF if exists
     if (formData.pdf) {
       formDataToSend.append('product_info_pdf', formData.pdf);
     }
-
+  
     try {
-      const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/card/create', {
-        method: 'POST',
+      // Set the correct API endpoint and HTTP method based on edit mode
+      const url = isEditMode
+        ? `https://admin-dash-oil-trade.onrender.com/api/v1/card/${editProductId}`
+        : "http://localhost:5000/api/v1/card/create";
+      const method = isEditMode ? "PUT" : "POST";
+  
+      // Make the request to the backend
+      const response = await fetch(url, {
+        method,
         body: formDataToSend,
       });
-
+  
+      // Handle the server response
       if (!response.ok) {
-        const errorData = await response.json(); 
-        throw new Error(`Error: ${errorData.message}`);
+        const errorText = await response.text();
+        throw new Error(`Server response error: ${errorText}`);
       }
-
+  
       const result = await response.json();
-      const newProduct = result.product;
-
-      setData((prevData) => [...prevData, newProduct]);
-      closeModal('my_modal_3');
-      setFormData(initialFormData);  // Сброс формы после отправки
+  
+      // Update UI based on the response
+      if (isEditMode) {
+        setData((prevData) =>
+          prevData.map((prod) => (prod._id === editProductId ? result.product : prod))
+        );
+      } else {
+        setData((prevData) => [...prevData, result.product]);
+      }
+  
+      // Close the modal and reset the form
+      closeModal("my_modal_3");
+      setFormData(initialFormData);
     } catch (error) {
-      console.error('Error adding product:', error.message);
+      console.error("Error saving product:", error.message);
+      alert(`Error saving product: ${error.message}`);
     }
   };
+  
+  
+  
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("https://admin-dash-oil-trade.onrender.com/api/v1/category");
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        const categoriesData = await response.json();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleDelete = async (id) => {
     try {
       const response = await fetch(`https://admin-dash-oil-trade.onrender.com/api/v1/card/${id}`, {
         method: 'DELETE',
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete product');
-      }
+      if (!response.ok) throw new Error('Failed to delete product');
 
       setData((prevData) => prevData.filter((product) => product._id !== id));
     } catch (error) {
@@ -200,17 +226,10 @@ const Products = () => {
   };
 
   useEffect(() => {
-    fetchCategories(); // Fetch categories when component loads
-  }, []);
-  
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/card');
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
+        const response = await fetch("https://admin-dash-oil-trade.onrender.com/api/v1/card");
+        if (!response.ok) throw new Error('Failed to fetch products');
         const products = await response.json();
         setData(products);
       } catch (error) {
@@ -225,20 +244,17 @@ const Products = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <FaSpinner className="animate-spin text-5xl text-gray-50" />
+      <div className="flex justify-center items-center h-screen w-screen">
+        <LoadingComponent />
       </div>
     );
   }
-data.forEach(item => {
-  console.log(item['image']['main_images'])
-})
 
   return (
     <div className="p-5 flex flex-col w-full gap-5">
       <button
         className="btn mb-5 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg"
-        onClick={openProductModal}
+        onClick={() => openProductModal()}
       >
         Добавить
       </button>
@@ -267,23 +283,22 @@ data.forEach(item => {
               </label>
 
               <label className="block">
-  <span className="text-gray-300">Категория</span>
-  <select
-    name="category"
-    value={formData.category}
-    onChange={handleFormChange}
-    className="input w-full mt-1 p-2 bg-gray-700 rounded-md text-white"
-    required
-  >
-    <option value="">Выберите категорию</option>
-    {categories.map((category) => (
-      <option key={category._id} value={category.category_name}>
-        {category.category_name}
-      </option>
-    ))}
-  </select>
-</label>
-
+                <span className="text-gray-300">Категория</span>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleFormChange}
+                  className="select w-full mt-1 p-2 bg-gray-700 rounded-md text-white"
+                  required
+                >
+                  <option value="">Выберите категорию</option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category.category_name}>
+                      {category.category_name}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
               <label className="block">
                 <span className="text-gray-300">Цена продукта</span>
@@ -407,7 +422,7 @@ data.forEach(item => {
               </button>
 
               <button type="submit" className="btn bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg mt-4">
-                Добавить продукт
+                {isEditMode ? "Сохранить изменения" : "Добавить продукт"}
               </button>
             </div>
           </form>
@@ -434,9 +449,13 @@ data.forEach(item => {
                 required
               />
 
-              {formData.imagePreviews[index] && (
+              {formData.image.all_images[index] && (
                 <div className="flex items-center mt-2">
-                  <img src={formData.imagePreviews[index]} alt={`preview ${index}`} className="w-32 h-32 object-cover mr-4" />
+                  <img
+                    src={URL.createObjectURL(formData.image.all_images[index])}
+                    alt={`preview ${index}`}
+                    className="w-32 h-32 object-cover mr-4"
+                  />
 
                   <label className="text-gray-300 flex items-center">
                     <input
@@ -476,45 +495,44 @@ data.forEach(item => {
               </tr>
             </thead>
             <tbody className="w-full break-normal break-words">
-  {data.map((product) => (
-    <tr key={product._id} className="w-full text-white">
-      <td>{product.name}</td>
-      <td>
-        {product.image && Array.isArray(product.image.main_images) && product.image.main_images.length > 0 ? (
-          <img
-            src={`https://admin-dash-oil-trade.onrender.com/${product.image.main_images[0]}`}
-            alt={product.name}
-            className="w-16 h-16 object-cover inline-block mr-2 cursor-pointer"
-            onClick={() => openImageModal(`https://admin-dash-oil-trade.onrender.com/${product.image.main_images[0]}`)}
-          />
-        ) : (
-          <span>No Image Available</span>
-        )}
-      </td>
-      <td>
-        {product.product_info_pdf ? (
-          <a href={`https://admin-dash-oil-trade.onrender.com/${product.product_info_pdf}`} target="_blank" rel="noopener noreferrer">
-            Скачать PDF
-          </a>
-        ) : (
-          <span>No PDF Available</span>
-        )}
-      </td>
-      <td>{product.description.length > 30 ? `${product.description.substring(0, 30)}...` : product.description}</td>
-      <td>${product.price}</td>
-      <td>
-        <button
-          className="btn btn-danger hover:bg-red-600 transition duration-200"
-          onClick={() => handleDelete(product._id)}
-        >
-          <FaTrash />
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-   
+              {data.map((product) => (
+                <tr key={product._id} className="w-full text-white">
+                  <td>{product.name}</td>
+                  <td>
+                    {product.image.all_images && product.image.all_images.length > 0 ? (
+                      <img
+                        src={`https://admin-dash-oil-trade.onrender.com/${product.image.all_images[0]}`}
+                        alt={product.name}
+                        className="w-16 h-16 object-cover inline-block mr-2 cursor-pointer"
+                        onClick={() => openImageModal(`https://admin-dash-oil-trade.onrender.com/${product.image.all_images[0]}`)}
+                      />
+                    ) : (
+                      <span>No Image Available</span>
+                    )}
+                  </td>
+                  <td>
+                    {product.product_info_pdf ? (
+                      <a href={`https://admin-dash-oil-trade.onrender.com/${product.product_info_pdf}`} download>
+                        Скачать PDF
+                      </a>
+                    ) : (
+                      <span>No PDF Available</span>
+                    )}
+                  </td>
+                  <td>{product.description.length > 30 ? `${product.description.substring(0, 30)}...` : product.description}</td>
+                  <td>${product.price}</td>
+                  <td>
+                    
+                    <button
+                      className="btn bg-red-500 hover:bg-red-600 transition duration-200"
+                      onClick={() => handleDelete(product._id)}
+                    >
+                      <FaTrash /> удалить
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
@@ -530,8 +548,6 @@ data.forEach(item => {
           {selectedImage && <img src={selectedImage} alt="Selected" className="w-full h-auto object-contain" />}
         </div>
       </dialog>
-
-      
     </div>
   );
 };

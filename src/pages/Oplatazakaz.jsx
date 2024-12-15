@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FaSpinner } from "react-icons/fa";
+import LoadingComponent from '../components/LoadingComponent';
 
 const Oplatazakaz = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    images: [],
+    images: null,
     name: '',
     description: '',
   });
@@ -34,7 +34,7 @@ const Oplatazakaz = () => {
     if (name === 'images') {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        [name]: Array.from(files),
+        images: files[0], // Only select the first image file
       }));
     } else {
       setFormData((prevFormData) => ({
@@ -47,46 +47,51 @@ const Oplatazakaz = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
+    // Check for missing fields
+    if (!formData.name || !formData.description || !formData.images) {
+      alert('Please fill in all fields');
+      setLoading(false);
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
-      formData.images.forEach((img) => {
-        formDataToSend.append('images', img);
-      });
+      formDataToSend.append('images', formData.images); // Single image upload
       formDataToSend.append('name', formData.name);
       formDataToSend.append('description', formData.description);
-  
+
       const url = isEditing
         ? `https://admin-dash-oil-trade.onrender.com/api/v1/zakaz/${currentEditId}`
-        : 'https://admin-dash-oil-trade.onrender.com/api/v1/zakaz/create'; // Ensure this endpoint exists on your server
+        : 'https://admin-dash-oil-trade.onrender.com/api/v1/zakaz/create';
       const method = isEditing ? 'PUT' : 'POST';
-  
+
       const response = await fetch(url, {
         method,
         body: formDataToSend,
       });
-  
+
       if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || 'Ошибка при отправке формы');
+        const errorText = await response.text();
+        console.error("Server error:", errorText);
+        throw new Error(`Form submission error: ${errorText}`);
       }
-  
+
       const result = await response.json();
-      if (isEditing) {
-        setData((prevData) =>
-          prevData.map((item) => (item._id === currentEditId ? result.zakaz : item))
-        );
-      } else {
-        setData((prevData) => [...prevData, result.zakaz]); // Add the new item to the data
-      }
-  
-      setFormData({ images: [], name: '', description: '' });
+
+      setData((prevData) =>
+        isEditing
+          ? prevData.map((item) => (item._id === currentEditId ? result.zakaz : item))
+          : [...prevData, result.zakaz]
+      );
+
+      setFormData({ images: null, name: '', description: '' });
       setIsEditing(false);
       setCurrentEditId(null);
       document.getElementById('my_modal_oplatazakaz').close();
     } catch (error) {
-      console.error('Ошибка при отправке формы:', error);
-      alert(`Не удалось отправить форму: ${error.message}`);
+      console.error('Form submission error:', error);
+      alert(`Failed to submit form: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -96,7 +101,7 @@ const Oplatazakaz = () => {
     setIsEditing(true);
     setCurrentEditId(oplataItem._id);
     setFormData({
-      images: oplataItem.images || [],
+      images: oplataItem.images ? oplataItem.images[0] : null, // Display the first image for editing
       name: oplataItem.name,
       description: oplataItem.description,
     });
@@ -127,14 +132,14 @@ const Oplatazakaz = () => {
         <button className="btn btn-primary" onClick={() => {
           setIsEditing(false);
           setCurrentEditId(null);
-          setFormData({ images: [], name: '', description: '' });
+          setFormData({ images: null, name: '', description: '' });
           document.getElementById('my_modal_oplatazakaz').showModal();
         }}>
           {isEditing ? 'Редактировать' : 'Добавить'}
         </button>
       </div>
 
-      <dialog id="my_modal_oplatazakaz" className="modal">
+      <dialog id="my_modal_oplatazakaz" className="modal text-white">
         <div className="modal-box">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</button>
@@ -142,7 +147,7 @@ const Oplatazakaz = () => {
           <form onSubmit={handleFormSubmit}>
             <label className="input input-bordered flex items-center gap-2 mt-10">
               Изображение
-              <input type="file" name="images" multiple onChange={handleFormChange} className="grow" required />
+              <input type="file" name="images" onChange={handleFormChange} className="grow" accept="image/*" required />
             </label>
             <label className="input input-bordered flex items-center gap-2 mt-5">
               Название
@@ -150,7 +155,7 @@ const Oplatazakaz = () => {
             </label>
             <label className="input input-bordered flex items-center gap-2 mt-5">
               Описание
-              <input name="description" value={formData.description} onChange={handleFormChange} className="grow" placeholder="Описание" />
+              <input name="description" value={formData.description} onChange={handleFormChange} className="grow" placeholder="Описание" required />
             </label>
             <button type="submit" className="btn mt-5">{isEditing ? 'Обновить элемент' : 'Добавить элемент'}</button>
           </form>
@@ -172,21 +177,24 @@ const Oplatazakaz = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="text-center flex justify-center items-center">
-                    <FaSpinner className="animate-spin text-5xl text-gray-50" />
+                  <td colSpan="5">
+                    <div className="flex justify-center items-center h-32">
+                      <LoadingComponent />
+                    </div>
                   </td>
                 </tr>
               ) : (
                 Array.isArray(data) && data.length > 0 ? (
                   data.map((oplataItem) => (
-                    <tr key={oplataItem._id} className='text-white'>
+                    <tr key={oplataItem._id} className="text-white">
                       <td>{oplataItem._id}</td>
                       <td>
-  {oplataItem.images.map((img, index) => (
-    <img key={index} src={`https://admin-dash-oil-trade.onrender.com/${img}`} alt={`Image ${index}`} className="w-[100px] h-[100px] object-cover"/>
-  ))}
-</td>
-
+                        <img
+                          src={`https://admin-dash-oil-trade.onrender.com/${oplataItem.images[0]}`}
+                          alt="Image"
+                          className="w-[100px] h-[100px] object-cover"
+                        />
+                      </td>
                       <td>{oplataItem.name}</td>
                       <td>
                         <div className="text-sm leading-relaxed max-w-xs overflow-hidden whitespace-nowrap text-ellipsis">
@@ -194,8 +202,12 @@ const Oplatazakaz = () => {
                         </div>
                       </td>
                       <td>
-                        <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(oplataItem)}>Редактировать</button>
-                        <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(oplataItem._id)}>Удалить</button>
+                        <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(oplataItem)}>
+                          Редактировать
+                        </button>
+                        <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(oplataItem._id)}>
+                          Удалить
+                        </button>
                       </td>
                     </tr>
                   ))

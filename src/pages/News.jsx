@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaSpinner } from "react-icons/fa";
 import { useOutletContext } from 'react-router-dom';
+import LoadingComponent from '../components/LoadingComponent';
 
 const News = () => {
   const { theme } = useOutletContext();
@@ -148,7 +149,7 @@ const News = () => {
         </button>
       </div>
 
-      <dialog id="my_modal_news" className="modal">
+      <dialog id="my_modal_news" className="modal text-white">
         <div className="modal-box">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">X</button>
@@ -187,48 +188,51 @@ const News = () => {
                 <th>Действия</th>
               </tr>
             </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="5" className="text-center flex justify-center items-center">
-                    <FaSpinner className="animate-spin text-5xl text-gray-50" />
-                  </td>
-                </tr>
-              ) : (
-                Array.isArray(data) && data.length > 0 ? (
-                  data.map((newsItem) => (
-                    <tr key={newsItem._id} className='text-white'>
-                      <td>{newsItem._id}</td>
-                      <td>
-                        {newsItem.images && newsItem.images.length > 0 ? (
-                          <img src={`https://admin-dash-oil-trade.onrender.com${newsItem.images[0]}`} alt="Изображение новости" className="w-16 h-16 object-cover" />
-                        ) : (
-                          <span>Без изображения</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="text-sm leading-relaxed max-w-xs truncate">
-                          {newsItem.description1}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="text-sm leading-relaxed max-w-xs truncate">
-                          {newsItem.description2}
-                        </div>
-                      </td>
-                      <td>
-                        <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(newsItem)}>Редактировать</button>
-                        <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(newsItem._id)}>Удалить</button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center">Нет доступных данных</td>
-                  </tr>
-                )
-              )}
-            </tbody>
+           <tbody>
+  {loading ? (
+    <tr>
+      <td colSpan="5" className="text-center">
+        <div className="flex justify-center items-center">
+          <LoadingComponent />
+        </div>
+      </td>
+    </tr>
+  ) : (
+    Array.isArray(data) && data.length > 0 ? (
+      data.map((newsItem) => (
+        <tr key={newsItem._id} className='text-white'>
+          <td>{newsItem._id}</td>
+          <td>
+            {newsItem.images && newsItem.images.length > 0 ? (
+              <img src={`https://admin-dash-oil-trade.onrender.com${newsItem.images[0]}`} alt="Изображение новости" className="w-16 h-16 object-cover" />
+            ) : (
+              <span>Без изображения</span>
+            )}
+          </td>
+          <td>
+            <div className="text-sm leading-relaxed max-w-xs truncate">
+              {newsItem.description1}
+            </div>
+          </td>
+          <td>
+            <div className="text-sm leading-relaxed max-w-xs truncate">
+              {newsItem.description2}
+            </div>
+          </td>
+          <td>
+            <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(newsItem)}>Редактировать</button>
+            <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(newsItem._id)}>Удалить</button>
+          </td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan="5" className="text-center">Нет доступных данных</td>
+      </tr>
+    )
+  )}
+</tbody>
+
           </table>
         </div>
       </div>

@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaEnvelope, FaPhone, FaTrash, FaSpinner } from 'react-icons/fa';
+import { FaEnvelope, FaPhone, FaTrash } from 'react-icons/fa';
+import LoadingComponent from '../components/LoadingComponent';
 
 const Applications = () => {
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedPhone, setSelectedPhone] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const yourToken = "your_actual_token_here"; // Replace with your actual token
 
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await axios.get('https://admin-dash-oil-trade.onrender.com/api/v1/zayavka/');
-                setApplications(response.data.data || []);
-                localStorage.setItem('applications', JSON.stringify(response.data.data || []));
+                const response = await axios.get('https://admin-dash-oil-trade.onrender.com/api/v1/zayavka/', {
+                    headers: { Authorization: `Bearer ${yourToken}` },
+                });
+                const data = response.data.data || [];
+                setApplications(data);
+                localStorage.setItem('applications', JSON.stringify(data));
             } catch (error) {
                 console.error('Error fetching applications:', error);
                 const savedApplications = localStorage.getItem('applications');
-                if (savedApplications) {
-                    setApplications(JSON.parse(savedApplications));
-                }
+                if (savedApplications) setApplications(JSON.parse(savedApplications));
             } finally {
                 setLoading(false);
             }
@@ -27,16 +30,6 @@ const Applications = () => {
 
         fetchApplications();
     }, []);
-
-    const handleDelete = async (id) => {
-        try {
-            await axios.delete(`https://admin-dash-oil-trade.onrender.com/api/v1/zayavka/${id}`);
-            setApplications(applications.filter((app) => app._id !== id));
-            console.log('Application successfully deleted');
-        } catch (error) {
-            console.error('Error deleting application:', error);
-        }
-    };
 
     const openModal = (phone) => {
         setSelectedPhone(phone);
@@ -47,14 +40,12 @@ const Applications = () => {
         setIsModalOpen(false);
         setSelectedPhone(null);
     };
-
+    
     return (
-        <div className=" mt-7 container mx-auto p-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl shadow-2xl min-h-screen">
+        <div className="mt-7 container mx-auto p-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl shadow-2xl min-h-screen">
             <h2 className="text-4xl font-bold text-center mb-8">Список заявок</h2>
             {loading ? (
-                <div className="flex justify-center items-center h-full">
-                    <FaSpinner className="animate-spin text-6xl" />
-                </div>
+                <LoadingComponent />
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {applications.map((app) => (
@@ -83,19 +74,13 @@ const Applications = () => {
 
                             <div className="mt-6 border-t border-gray-600 pt-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-500">Дата: {new Date().toLocaleDateString()}</span>
+                                    <span className="text-sm text-gray-500">Дата: {new Date(app.date).toLocaleDateString()}</span>
                                     <div className="flex items-center">
                                         <button
                                             className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors mr-2"
                                             onClick={() => openModal(app.phone)}
                                         >
                                             Связаться
-                                        </button>
-                                        <button
-                                            className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
-                                            onClick={() => handleDelete(app._id)}
-                                        >
-                                            <FaTrash className="mr-2" /> Удалить
                                         </button>
                                     </div>
                                 </div>
