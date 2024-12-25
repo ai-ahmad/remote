@@ -31,7 +31,7 @@ const Create = () => {
     const partnerData = { username, password, role }; 
 
     try {
-      const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/admin/create-partnyor', {
+      const response = await fetch('https://oildrive-wtc-backend-1.onrender.com/api/v1/admin/create-partnyor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

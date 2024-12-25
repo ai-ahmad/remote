@@ -40,7 +40,18 @@ const Applications = () => {
         setIsModalOpen(false);
         setSelectedPhone(null);
     };
-    
+
+    const deleteApplication = async (id) => {
+        try {
+            await axios.delete(`https://admin-dash-oil-trade.onrender.com/api/v1/zayavka/${id}`, {
+                headers: { Authorization: `Bearer ${yourToken}` },
+            });
+            setApplications(applications.filter((app) => app._id !== id));
+        } catch (error) {
+            console.error("Error deleting application:", error);
+        }
+    };
+
     return (
         <div className="mt-7 container mx-auto p-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl shadow-2xl min-h-screen">
             <h2 className="text-4xl font-bold text-center mb-8">Список заявок</h2>
@@ -81,6 +92,13 @@ const Applications = () => {
                                             onClick={() => openModal(app.phone)}
                                         >
                                             Связаться
+                                        </button>
+                                        <button
+                                            className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+                                            onClick={() => deleteApplication(app._id)}
+                                        >
+                                            <FaTrash className="inline mr-2" />
+                                            Удалить
                                         </button>
                                     </div>
                                 </div>

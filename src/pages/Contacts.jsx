@@ -197,7 +197,7 @@ const Contacts = () => {
                           contactItem.images.map((images, index) => (
                             <img 
                               key={index}
-                              src={`https://admin-dash-oil-trade.onrender.com/${images}`} 
+                              src={`hhttps://oildrive-wtc-backend-1.onrender.com/${images}`} 
                               alt={`contact-${index}`} 
                               className="w-[100px] h-[100px] object-cover"
                             />

@@ -16,7 +16,7 @@ const Otziv = () => {
 
     const fetchOtzivs = async () => {
         try {
-            const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/otziv');
+            const response = await fetch('https://oildrive-wtc-backend-1.onrender.com/api/v1/otziv');
             const otzivs = await response.json();
             setData(otzivs);
         } catch (error) {
@@ -42,8 +42,8 @@ const Otziv = () => {
         e.preventDefault();
         try {
             const url = isEditing && currentEditId
-                ? `https://admin-dash-oil-trade.onrender.com/api/v1/otziv/${currentEditId}`
-                : 'https://admin-dash-oil-trade.onrender.com/api/v1/otziv/create';
+                ? `https://oildrive-wtc-backend-1.onrender.com/api/v1/otziv/${currentEditId}`
+                : 'https://oildrive-wtc-backend-1.onrender.com/api/v1/otziv/create';
             const method = isEditing ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -93,7 +93,7 @@ const Otziv = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`https://admin-dash-oil-trade.onrender.com/api/v1/otziv/delete`, {
+            const response = await fetch(`https://oildrive-wtc-backend-1.onrender.com/api/v1/otziv/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

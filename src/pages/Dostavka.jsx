@@ -20,6 +20,7 @@ const Dostavka = () => {
             const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/dastavka/');
             if (!response.ok) throw new Error('Network response was not ok');
             const dostavkaData = await response.json();
+            console.log(dostavkaData);  // Log the response data
             setData(dostavkaData);
         } catch (error) {
             console.error('Ошибка при загрузке данных доставки:', error);
@@ -27,6 +28,7 @@ const Dostavka = () => {
             setLoading(false);
         }
     };
+    
 
     useEffect(() => {
         dataRequest();
@@ -68,7 +70,7 @@ const Dostavka = () => {
             }
     
             // Send the POST request to the backend
-            const response = await fetch('http://localhost:5000/api/v1/dastavka/create', {
+            const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/dastavka/create', {
                 method: 'POST',
                 body: formDataToSend,
                 headers: {
@@ -204,54 +206,55 @@ const Dostavka = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="text-center">
-                                        <div className="flex justify-center items-center">
-                                            <LoadingComponent />
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                Array.isArray(data) && data.length > 0 ? (
-                                    data.map((dostavkaItem) => (
-                                        <tr key={dostavkaItem._id} className="text-white">
-                                            <td>{dostavkaItem._id}</td>
-                                            <td>{dostavkaItem.name}</td>
-                                            <td>
-    {dostavkaItem.images && dostavkaItem.images.length > 0 ? (
-        dostavkaItem.images.map((image, index) => (
-            <img
-                key={index}
-                src={image} // Используем полный путь из API
-                alt={`Изображение ${index + 1}`}
-                className="w-16 h-16 object-cover"
-            />
-        ))
+    {loading ? (
+        <tr>
+            <td colSpan="5" className="text-center">
+                <div className="flex justify-center items-center">
+                    <LoadingComponent />
+                </div>
+            </td>
+        </tr>
     ) : (
-        <span>Без изображений</span>
-    )}
-</td>
-
-
-                                            <td>
-                                                <div className="text-sm leading-relaxed max-w-xs truncate">
-                                                    {dostavkaItem.description}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(dostavkaItem)}>Редактировать</button>
-                                                <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(dostavkaItem._id)}>Удалить</button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5" className="text-center">Нет доступных данных</td>
-                                    </tr>
-                                )
+        Array.isArray(data) && data.length > 0 ? (
+            data
+                .filter((item) => item && item._id) // Filter out invalid items
+                .map((dostavkaItem) => (
+                    <tr key={dostavkaItem._id} className="text-white">
+                        <td>{dostavkaItem._id}</td>
+                        <td>{dostavkaItem.name}</td>
+                        <td>
+                            {dostavkaItem.images && dostavkaItem.images.length > 0 ? (
+                                dostavkaItem.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={image} // Ensure this is the correct path
+                                        alt={`Изображение ${index + 1}`}
+                                        className="w-16 h-16 object-cover"
+                                    />
+                                ))
+                            ) : (
+                                <span>Без изображений</span>
                             )}
-                        </tbody>
+                        </td>
+                        <td>
+                            <div className="text-sm leading-relaxed max-w-xs truncate">
+                                {dostavkaItem.description}
+                            </div>
+                        </td>
+                        <td>
+                            <button className="btn hover:bg-yellow-200 transition duration-200" onClick={() => handleEdit(dostavkaItem)}>Редактировать</button>
+                            <button className="btn hover:bg-red-600 transition duration-200" onClick={() => handleDelete(dostavkaItem._id)}>Удалить</button>
+                        </td>
+                    </tr>
+                ))
+        ) : (
+            <tr>
+                <td colSpan="5" className="text-center">Нет доступных данных</td>
+            </tr>
+        )
+    )}
+</tbody>
+
                     </table>
                 </div>
             </div>

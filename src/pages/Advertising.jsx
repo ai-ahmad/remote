@@ -112,7 +112,7 @@ const Advertising = () => {
         }
 
         try {
-            const response = await fetch(`https://admin-dash-oil-trade.onrender.com/api/v1/banner/${id}`, {
+            const response = await fetch(`https://oildrive-wtc-backend-1.onrender.com/api/v1/banner/${id}`, {
                 method: 'DELETE',
             });
             if (!response.ok) throw new Error('Error deleting advertisement');
@@ -192,7 +192,7 @@ const Advertising = () => {
                                 <tr key={ad._id} className='text-white'>
                                     <td>{ad._id}</td>
                                     <td>
-                                        <img src={`https://admin-dash-oil-trade.onrender.com${ad.image_url}`} alt="Ad" style={{ width: '100px', height: 'auto' }} />
+                                        <img src={`https://oildrive-wtc-backend-1.onrender.com${ad.image_url}`} alt="Ad" style={{ width: '100px', height: 'auto' }} />
                                     </td>
                                     <td>{truncateDescription(ad.description)}</td>
                                     <td>

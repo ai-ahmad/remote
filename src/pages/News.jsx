@@ -18,7 +18,7 @@ const News = () => {
 
   const dataRequest = async () => {
     try {
-      const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/news/');
+      const response = await fetch('https://oildrive-wtc-backend-1.onrender.com/api/v1/news/');
       if (!response.ok) throw new Error('Network response was not ok');
       const news = await response.json();
       setData(news);
@@ -63,7 +63,7 @@ const News = () => {
         newFormData.append('images', file);
       });
 
-      const url = isEditing ? `https://admin-dash-oil-trade.onrender.com/api/v1/news/${currentEditId}` : 'https://admin-dash-oil-trade.onrender.com/api/v1/news/create';
+      const url = isEditing ? `https://oildrive-wtc-backend-1.onrender.com/api/v1/news/${currentEditId}` : 'https://oildrive-wtc-backend-1.onrender.com/api/v1/news/create';
       const method = isEditing ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -110,7 +110,7 @@ const News = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://admin-dash-oil-trade.onrender.com/api/v1/news/${id}`, {
+      const response = await fetch(`https://oildrive-wtc-backend-1.onrender.com/api/v1/news/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -204,7 +204,7 @@ const News = () => {
           <td>{newsItem._id}</td>
           <td>
             {newsItem.images && newsItem.images.length > 0 ? (
-              <img src={`https://admin-dash-oil-trade.onrender.com${newsItem.images[0]}`} alt="Изображение новости" className="w-16 h-16 object-cover" />
+              <img src={`https://oildrive-wtc-backend-1.onrender.com${newsItem.images[0]}`} alt="Изображение новости" className="w-16 h-16 object-cover" />
             ) : (
               <span>Без изображения</span>
             )}
