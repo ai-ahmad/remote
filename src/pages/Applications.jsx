@@ -93,13 +93,7 @@ const Applications = () => {
                                         >
                                             Связаться
                                         </button>
-                                        <button
-                                            className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
-                                            onClick={() => deleteApplication(app._id)}
-                                        >
-                                            <FaTrash className="inline mr-2" />
-                                            Удалить
-                                        </button>
+                                        
                                     </div>
                                 </div>
                             </div>

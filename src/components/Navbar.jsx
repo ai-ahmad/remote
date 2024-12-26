@@ -15,11 +15,7 @@ const Navbar = ({ toggleTheme, theme }) => {
                 <a className={`btn btn-ghost text-xl font-bold ${logoColor} hover:text-blue-300 transition duration-300`}>
                     oilDrive.uz
                 </a>
-                <img 
-                    src="https://oiltrade.uz/templates/oiltrade/images/logo1.png" 
-                    alt="Логотип oilTrade" 
-                    className="h-10 ml-4" 
-                />
+                
             </div>
             <div className='mr-5 '>
                 <Create />

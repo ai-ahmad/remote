@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash, FaEdit, FaSpinner, FaPlus, FaFilePdf, FaImage } from "react-icons/fa";
-
-import LoadingComponent from '../components/LoadingComponent';
-
-
+import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
+import Loading from "../components/LoadingComponent";
 
 const Products = () => {
   const initialFormData = {
@@ -95,9 +93,9 @@ const Products = () => {
         ...product,
         images: Array.isArray(product.image) ? product.image : [product.image],
         imagePreviews: Array.isArray(product.image)
-          ? product.image.map((img) => `https://admin-dash-oil-trade.onrender.com/${img}`)
+          ? product.image.map((img) => `https://oildrive-wtc-backend-1.onrender.com/${img}`)
           : product.image
-          ? [`https://admin-dash-oil-trade.onrender.com/${product.image}`]
+          ? [`https://oildrive-wtc-backend-1.onrender.com/${product.image}`]
           : [],
       });
       setIsEditMode(true);
@@ -181,7 +179,7 @@ const Products = () => {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
-        `https://admin-dash-oil-trade.onrender.com/api/v1/card/${id}`,
+        `https://oildrive-wtc-backend-1.onrender.com/api/v1/card/${id}`,
         {
           method: "DELETE",
         }
@@ -197,12 +195,12 @@ const Products = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://admin-dash-oil-trade.onrender.com/api/v1/card");
-        if (!response.ok) throw new Error("Failed to fetch card");
-        const card = await response.json();
-        setData(card);
+        const response = await fetch("http://localhost:5000/api/v1/card");
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const products = await response.json();
+        setData(products);
       } catch (error) {
-        console.error("Error fetching card:", error);
+        console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
@@ -214,12 +212,10 @@ const Products = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <LoadingComponent />
+        <Loading />
       </div>
     );
   }
-  
-  
 
   return (
     <div className="p-5 flex flex-col w-full gap-5">
@@ -469,12 +465,12 @@ const Products = () => {
                     <td>
                       {product.images && product.images.length > 0 ? (
                         <img
-                          src={`https://admin-dash-oil-trade.onrender.com${product.images[0]}`}
+                          src={`http://localhost:9000${product.images[0]}`}
                           alt={product.name}
                           className="w-16 h-16 object-cover inline-block mr-2 cursor-pointer"
                           onClick={() =>
                             openImageModal(
-                              `https://admin-dash-oil-trade.onrender.com${product.images[0]}`
+                              `http://localhost:9000${product.images[0]}`
                             )
                           }
                         />
@@ -482,11 +478,10 @@ const Products = () => {
                         <span>No Image Available</span>
                       )}
                     </td>
-
                     <td>
                       {product.product_info_pdf ? (
                         <a
-                          href={`https://admin-dash-oil-trade.onrender.com/${product.product_info_pdf}`}
+                          href={`http://localhost:9000/${product.product_info_pdf}`}
                           download
                         >
                           Скачать PDF
