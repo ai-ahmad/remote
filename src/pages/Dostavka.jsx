@@ -227,7 +227,7 @@ const Dostavka = () => {
                                 dostavkaItem.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={image} // Ensure this is the correct path
+                                        src={`https://admin-dash-oil-trade.onrender.com/${dostavkaItem.images[0].replace(/\\/g, '/')}`}
                                         alt={`Изображение ${index + 1}`}
                                         className="w-16 h-16 object-cover"
                                     />

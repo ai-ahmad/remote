@@ -14,7 +14,7 @@ const Oplatazakaz = () => {
 
   const dataRequest = async () => {
     try {
-      const response = await fetch('https://oildrive-wtc-backend-1.onrender.com/api/v1/zakaz');
+      const response = await fetch('https://admin-dash-oil-trade.onrender.com/api/v1/zakaz');
       if (!response.ok) throw new Error('Network response was not ok');
       const oplataData = await response.json();
       setData(oplataData);
@@ -62,8 +62,8 @@ const Oplatazakaz = () => {
       formDataToSend.append('description', formData.description);
 
       const url = isEditing
-        ? `https://oildrive-wtc-backend-1.onrender.com/api/v1/zakaz/${currentEditId}`
-        : 'https://oildrive-wtc-backend-1.onrender.com/api/v1/zakaz/create';
+        ? `https://admin-dash-oil-trade.onrender.com/api/v1/zakaz/${currentEditId}`
+        : 'https://admin-dash-oil-trade.onrender.com/api/v1/zakaz/create';
       const method = isEditing ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -110,7 +110,7 @@ const Oplatazakaz = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://oildrive-wtc-backend-1.onrender.com/api/v1/zakaz/${id}`, {
+      const response = await fetch(`https://admin-dash-oil-trade.onrender.com/api/v1/zakaz/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -190,7 +190,7 @@ const Oplatazakaz = () => {
                       <td>{oplataItem._id}</td>
                       <td>
                         <img
-                          src={`https://oildrive-wtc-backend-1.onrender.com/${oplataItem.images[0]}`}
+                          src={`https://admin-dash-oil-trade.onrender.com/${oplataItem.images[0]}`}
                           alt="Image"
                           className="w-[100px] h-[100px] object-cover"
                         />
